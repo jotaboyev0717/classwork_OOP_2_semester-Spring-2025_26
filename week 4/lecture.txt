@@ -1,0 +1,2 @@
+is a -(Denotes inheritence) Cat is a Animal, Studebt is a People
+Has a - (Denotas composition) Laptop has a CPU, Car has an engine

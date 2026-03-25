@@ -37,7 +37,7 @@ class BankAccount:
         
         self._balance -= amount
         
-        self.__transactions.append(("deposit", amount, self._balance))
+        self.__transactions.append(("withdraw", amount, self._balance))
         
     @property
     def transaction_count(self) -> int:
