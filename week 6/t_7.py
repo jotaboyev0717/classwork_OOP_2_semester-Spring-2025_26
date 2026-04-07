@@ -97,3 +97,4 @@ print(f"Bobur passing: {GradeTracker.is_passing(s1.average())}")
 print(f"Nodira passing: {GradeTracker.is_passing(s2.average())}")
 
 print(f"Class average: {GradeTracker.class_average()}")
+

@@ -15,3 +15,6 @@ plane = Airplane()
 
 start_journey(car)
 start_journey(plane)
+
+hasattr(car, "movie")
+# shu object ichida bu method yoki attribute bormi
