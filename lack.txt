@@ -4,3 +4,5 @@ w_4_t_7
 w_7_t_3_4
 w_7_t_5 cls method
 w_5_t_8 assignment also
+w_9_t_6
+w_10_a_12 + tutorials

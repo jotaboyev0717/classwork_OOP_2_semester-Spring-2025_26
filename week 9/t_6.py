@@ -33,6 +33,7 @@ class Tracker:
         for transaction in self.transactions:
             if transaction.category == category:
                 return [transaction]
+            
     def summary(self) -> dict[str, int]:
         result = {}
         for transaction in self.transactions:
@@ -64,6 +65,7 @@ class Tracker:
 
         sorted_partners = sorted(partners.items(), key=lambda x: x[1], reverse=True)
         return sorted_partners[:n]   
+    
 t1 = Transaction(5000, "Gurney", "Duncan", "spice")
 t2 = Transaction(3000, "Duncan", "Stilgar", "weapons")
 t3 = Transaction(2000, "Chani", "Duncan", "spice")
