@@ -1,0 +1,19 @@
+class DimmerSwitch:
+	def __init__(self):
+		self._brightness = 0
+
+	@brightness
+	def brightness(self):
+		return self._brightness
+
+	@brightness.setter
+	def brightness(self, value):
+		if not <= value <= 100:
+			print("Invalid ")
+		else:
+			self. Brightness = value
+
+	def increase(self, amount):
+		if self._brightness + amount < 101:
+			self._brightness += amount
+

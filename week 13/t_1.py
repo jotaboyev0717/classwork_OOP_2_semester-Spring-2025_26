@@ -19,7 +19,7 @@ class PlaylistFileWriter:
 class PlaylistSharer:
     def share(self, playlist: Playlist):
         print(f"🎵 {playlist.name} ({playlist.total_minutes()} min)")
-        for title, minutes in playlist.songs:
+        for title, _ in playlist.songs:
             print(f" • {title}")
         
         

@@ -1,0 +1,17 @@
+class Student:
+    def __init__(self, name, scores):
+        self.name = name
+        self.average = sum(self.scores) / len(self.scores) if scores else 0
+
+    def report(self):
+        return f"{self.name}: average = {self.average}"
+
+class HonoursStudent(Student):
+    def __init__(self, name, scores, bonus):
+        super().__init__(name, scores)
+        self.average += bonus
+
+    def report(self):
+        return f"{self.name}: average = {self.average} (honours)"
+
+

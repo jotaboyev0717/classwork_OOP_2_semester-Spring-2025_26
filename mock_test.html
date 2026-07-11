@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python OOP va Design Patterns Testi</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --correct-color: #2ecc71;
+            --wrong-color: #e74c3c;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            border-color: #ced4da;
+        }
+
+        .option.correct {
+            background-color: #d4edda !important;
+            border-color: var(--correct-color) !important;
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .option.wrong {
+            background-color: #f8d7da !important;
+            border-color: var(--wrong-color) !important;
+            color: #721c24;
+        }
+
+        .disabled {
+            pointer-events: none;
+        }
+
+        #result {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            padding: 20px;
+            background: #eef2f7;
+            border-radius: 10px;
+            display: none;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 40px;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #finish-btn { background-color: var(--primary-color); }
+        #finish-btn:hover { background-color: #1a252f; }
+        
+        #clear-btn { background-color: #7f8c8d; padding: 8px 20px; font-size: 0.9rem; }
+        #clear-btn:hover { background-color: #95a5a6; }
+
+        code {
+            background: #eee;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Tarix bo'limi stili */
+        .history-section {
+            margin-top: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 1rem;
+        }
+        
+        .history-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Python OOP & Design Patterns Testi</h1>
+    <div id="quiz"></div>
+    <button id="finish-btn" onclick="showResults()">Natijani ko'rish va saqlash</button>
+    <div id="result"></div>
+</div>
+
+<!-- Tarix konteyneri -->
+<div class="container history-section">
+    <h2>Urinishlar Tarixi</h2>
+    <div id="history-list"></div>
+    <button id="clear-btn" onclick="clearHistory()">Tarixni tozalash</button>
+</div>
+
+<script>
+    const questions = [
+        {
+            q: "Which of the following best describes the difference between inheritance and composition?",
+            options: [
+                "Inheritance models a 'has-a' relationship; composition models an 'is-a' relationship.",
+                "Inheritance models an 'is-a' relationship; composition models a 'has-a' relationship.",
+                "Inheritance is used for functions, while composition is used only for classes.",
+                "Inheritance duplicates code, while composition eliminates the need for classes entirely."
+            ],
+            correct: 1
+        },
+        {
+            q: "A function calls <code>obj.save()</code> without checking whether <code>obj</code> inherits from a specific base class. It works for any object that has a compatible <code>save()</code> method. What Python idea is this using?",
+            options: [
+                "Duck typing, because the code depends on behavior rather than the object's exact class.",
+                "Polymorphism via abstract base classes.",
+                "Encapsulation, because the save method is hidden from the outer scope.",
+                "Strong typing, because Python strictly checks the class hierarchy at runtime."
+            ],
+            correct: 0
+        },
+        {
+            q: "What is the difference between <code>@classmethod</code> and <code>@staticmethod</code>?",
+            options: [
+                "Class methods receive nothing special; static methods receive the instance itself first.",
+                "Static methods can modify class state, while class methods cannot.",
+                "Static methods receive nothing special; class methods receive the class itself first.",
+                "@classmethod is only used in Python 2, while @staticmethod is used in Python 3."
+            ],
+            correct: 2
+        },
+        {
+            q: "Why should a custom exception class inherit from <code>Exception</code> rather than <code>BaseException</code>?",
+            options: [
+                "Because Python only permits user-defined classes to inherit from Exception directly.",
+                "Because Exception runs faster and consumes less memory at import time.",
+                "Because BaseException is deprecated and will be removed in future Python versions.",
+                "Because BaseException includes system-level events like KeyboardInterrupt that should not be caught alongside ordinary application errors."
+            ],
+            correct: 3
+        },
+        {
+            q: "What does a bare <code>raise</code> statement do inside an <code>except</code> block?",
+            options: [
+                "It raises a RuntimeError because raise must always have a specific exception after it.",
+                "Re-raises the same exception again, keeping its original traceback information.",
+                "It clears the current exception and stops the execution of the script safely.",
+                "It moves the execution to the next except block in the hierarchy."
+            ],
+            correct: 1
+        },
+        {
+            q: "Pytest is run in a folder containing <code>tests_one.py</code> with a function named <code>check_address()</code>. Why will this test probably not run automatically?",
+            options: [
+                "Pytest only discovers tests written inside classes that inherit from unittest.TestCase.",
+                "Pytest only discovers files and functions whose names start with 'test_'.",
+                "Pytest requires an explicit configuration file (pytest.ini) to find any functions.",
+                "Pytest cannot run functions that accept arguments without special decorators."
+            ],
+            correct: 1
+        },
+        {
+            q: "A <code>Report</code> class loads data, calculates totals, formats HTML, and sends the result by email. Which design best follows the Single Responsibility Principle?",
+            options: [
+                "Move formatting and sending into separate classes, leaving Report focused on report data.",
+                "Keep all methods inside Report but make them private so they cannot be accessed outside.",
+                "Inherit Report from four different base classes: Loader, Calculator, Formatter, and Mailer.",
+                "Use a single massive function inside Report to execute all steps sequentially."
+            ],
+            correct: 0
+        },
+        {
+            q: "A <code>ShippingCost</code> class uses a long <code>if/elif</code> chain for 'standard', 'express', and 'overnight'. You need to add 'international' without editing the existing class. Which design best follows the Open/Closed Principle?",
+            options: [
+                "Rename the existing class to InternationalShippingCost and keep the same conditional logic.",
+                "Use monkey-patching at runtime to inject the new condition into the existing method.",
+                "Define separate shipping strategy classes and pass the chosen strategy into ShippingCost.",
+                "Convert the if/elif chain into a nested dictionary defined inside a global configuration file."
+            ],
+            correct: 2
+        },
+        {
+            q: "Suppose <code>Student</code> is a class where <code>__init__</code> sets <code>self._audit_code = 42</code>, and you create an instance with <code>s = Student()</code>. Which of the following will successfully access that attribute from outside the class?",
+            options: [
+                "s._Student__audit_code",
+                "s._audit_code",
+                "s.__audit_code",
+                "Student.get_audit_code(s)"
+            ],
+            correct: 1
+        },
+        {
+            // TO'G'RILANDI: class Tool(Base, Machinery) bo'ldi va javob "Base" (index: 0)
+            q: "What does the following code print? <br><code>class Base: def describe(self): return 'Base'</code><br><code>class Machinery: def describe(self): return 'Machinery'</code><br><code>class Tool(Base, Machinery): pass</code>",
+            options: [
+                "Base",
+                "AttributeError",
+                "('Machinery', 'Base')",
+                "Machinery"
+            ],
+            correct: 0
+        },
+        {
+            q: "Inside a function defined as <code>def f(*args, **kwargs): ...</code>, what do args and kwargs refer to?",
+            options: [
+                "args is a list and kwargs is a set.",
+                "args represents optional and kwargs represents mandatory arguments.",
+                "args is a tuple of positional arguments and kwargs is a dictionary of keyword arguments.",
+                "args is a dictionary and kwargs is a tuple."
+            ],
+            correct: 2
+        },
+        {
+            q: "Why is <code>isinstance(x, subclass)</code> generally preferred over <code>type(x) is subclass</code>?",
+            options: [
+                "isinstance also returns True for instances of subclasses, supporting inheritance.",
+                "type(x) is subclass is slower.",
+                "isinstance works with primitives while type() only works with custom classes.",
+                "type(x) is subclass does not support built-in types like str."
+            ],
+            correct: 0
+        },
+        {
+            q: "Which <code>dataclass</code> setting puts a field on the object but keeps it out of the automatically created <code>__init__</code>?",
+            options: [
+                "field(default_factory=None)",
+                "field(init=False)",
+                "field(repr=False)",
+                "field(compare=False)"
+            ],
+            correct: 1
+        },
+        {
+            q: "What does the Dependency Inversion Principle recommend?",
+            options: [
+                "High-level classes should create their own concrete dependencies.",
+                "Classes should depend on abstractions (interfaces) and receive implementations from outside.",
+                "Low-level classes should depend directly on high-level classes.",
+                "All classes must be inverted into functions."
+            ],
+            correct: 1
+        },
+        {
+            q: "Why is the Interface Segregation Principle violated when one big interface forces many methods like send(), save(), print()?",
+            options: [
+                "Because classes are forced to implement methods that don't apply to them.",
+                "Because big interfaces make the code compile slower.",
+                "Because it prevents classes from using multiple inheritance.",
+                "Because it overrides Python's built-in print() function."
+            ],
+            correct: 0
+        },
+        {
+            q: "When you use <code>@patch('module.inspect_get')</code> on a test, what does it actually replace?",
+            options: [
+                "The real inspect_get inside the module where it's defined.",
+                "The place in your own code where that name is used.",
+                "The entire python standard library cache.",
+                "Only the local variables inside the test function."
+            ],
+            correct: 1
+        },
+        {
+            q: "How does the Strategy pattern improve a class using long <code>if/elif</code> chains?",
+            options: [
+                "By moving the chain into a helper function.",
+                "By using a database query to look up the algorithm.",
+                "By replacing the choice with a strategy object passed from outside.",
+                "By compressing the conditional statements into byte code."
+            ],
+            correct: 2
+        },
+        {
+            q: "What does the following print? <br><code>class C: count=0; def __init__(self): self.count+=1</code>",
+            options: [
+                "2 2 2",
+                "0 0 0",
+                "1 1 1",
+                "0 1 1"
+            ],
+            correct: 3
+        },
+        {
+            q: "In pytest, what is a fixture mainly used for?",
+            options: [
+                "To turn every function into a unit test model.",
+                "To provide reusable setup data and objects for tests.",
+                "To automatically fix syntax errors.",
+                "To generate mock assertions."
+            ],
+            correct: 1
+        },
+        {
+            q: "What is the main idea of the Factory design pattern?",
+            options: [
+                "To create objects through a special function, hiding how they are made.",
+                "To provide reusable setup data for tests.",
+                "To manage database connections automatically.",
+                "To replicate instances across multiple CPU threads."
+            ],
+            correct: 0
+        }
+    ];
+
+    const quizContainer = document.getElementById('quiz');
+    let score = 0;
+    let answeredCount = 0;
+    let isSaved = false;
+
+    function renderQuiz() {
+        questions.forEach((item, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-block';
+            qDiv.innerHTML = `
+                <div class="question-text">${index + 1}. ${item.q}</div>
+                <div class="options" id="q${index}">
+                    ${item.options.map((opt, i) => `
+                        <div class="option" onclick="checkAnswer(this, ${index}, ${i})">${opt}</div>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(qDiv);
+        });
+        renderHistory();
+    }
+
+    function checkAnswer(element, qIndex, oIndex) {
+        const parent = document.getElementById(`q${qIndex}`);
+        const options = parent.getElementsByClassName('option');
+        const correctIndex = questions[qIndex].correct;
+
+        parent.classList.add('disabled');
+        answeredCount++;
+
+        if (oIndex === correctIndex) {
+            element.classList.add('correct');
+            score++;
+        } else {
+            element.classList.add('wrong');
+            options[correctIndex].classList.add('correct');
+        }
+    }
+
+    function showResults() {
+        if (isSaved) {
+            alert("Bu natija allaqachon tarixga saqlandi!");
+            return;
+        }
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `Sizning natijangiz: ${score} / ${questions.length}`;
+        
+        // Tarixga saqlash funksiyasi chaqiriladi
+        saveToHistory(score);
+        isSaved = true;
+
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Tarixni xotiraga yozish
+    function saveToHistory(finalScore) {
+        let history = JSON.parse(localStorage.getItem('quiz_history')) || [];
+        
+        const currentAttempt = {
+            date: new Date().toLocaleString('uz-UZ'),
+            score: finalScore,
+            total: questions.length
+        };
+        
+        history.push(currentAttempt);
+        localStorage.setItem('quiz_history', JSON.stringify(history));
+        renderHistory();
+    }
+
+    // Tarixni ekranga chiqarish
+    function renderHistory() {
+        const historyList = document.getElementById('history-list');
+        let history = JSON.parse(localStorage.getItem('quiz_history')) || [];
+        
+        if (history.length === 0) {
+            historyList.innerHTML = `<p style="color: #7f8c8d; text-align: center;">Hozircha urinishlar mavjud emas.</p>`;
+            return;
+        }
+        
+        // Oxirgi urinish tepada chiqishi uchun teskari tartibda chiqaramiz
+        historyList.innerHTML = [...history].reverse().map((item, idx) => {
+            const percent = Math.round((item.score / item.total) * 100);
+            const color = percent >= 60 ? 'var(--correct-color)' : 'var(--wrong-color)';
+            return `
+                <div class="history-item">
+                    <span>📅 ${item.date}</span>
+                    <span style="color: ${color}; font-weight: bold;">${item.score} / ${item.total} (${percent}%)</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Tarixni o'chirish
+    function clearHistory() {
+        if (confirm("Haqiqatan ham barcha urinishlar tarixini o'chirib tashlamoqchimisiz?")) {
+            localStorage.removeItem('quiz_history');
+            renderHistory();
+        }
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Programming II - Full Exam</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        header {
+            text-align: center; margin-bottom: 30px; background: var(--card-bg);
+            padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 { color: var(--primary); }
+        .section-title { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-top: 40px; }
+        .question-card {
+            background: var(--card-bg); padding: 20px; border-radius: 8px;
+            margin-bottom: 20px; border: 2px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .question-card.correct { border-color: var(--success); background-color: #ecfdf5; }
+        .question-card.wrong { border-color: var(--danger); background-color: #fef2f2; }
+        .options { list-style-type: none; padding-left: 0; }
+        .options li { margin-bottom: 10px; }
+        .options label { cursor: pointer; display: flex; align-items: flex-start; gap: 10px; }
+        pre, code {
+            background: var(--code-bg); color: var(--code-text);
+            padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 14px;
+        }
+        pre { padding: 15px; overflow-x: auto; margin-top: 10px; }
+        textarea {
+            width: 100%; min-height: 100px; padding: 10px;
+            border: 1px solid var(--border); border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace; resize: vertical; margin-top: 15px; box-sizing: border-box;
+        }
+        .solution-box {
+            display: none; margin-top: 15px; padding: 15px;
+            background: #e0f2fe; border-left: 4px solid var(--primary);
+            border-radius: 4px; font-size: 14px;
+        }
+        .actions {
+            position: sticky; bottom: 0; text-align: center; margin-top: 40px;
+            background: var(--card-bg); padding: 15px; border-radius: 8px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; z-index: 10;
+        }
+        button {
+            color: white; border: none; padding: 12px 25px; font-size: 16px;
+            border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s;
+        }
+        .btn-save { background-color: var(--primary); }
+        .btn-save:hover { background-color: #1d4ed8; }
+        .btn-check { background-color: var(--success); }
+        .btn-check:hover { background-color: #047857; }
+        .btn-history { background-color: #475569; }
+        .btn-history:hover { background-color: #334155; }
+        
+        .toast {
+            visibility: hidden; min-width: 250px; background-color: var(--primary); color: #fff;
+            text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 100;
+            left: 50%; bottom: 80px; transform: translateX(-50%); font-size: 17px;
+        }
+        .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 80px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 80px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        
+        #historyModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--card-bg); padding: 20px; border-radius: 8px;
+            width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto;
+        }
+        .history-item {
+            padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
+        }
+        .code-solution { background: #f1f5f9; padding: 10px; border-radius: 5px; color: #0f172a; white-space: pre-wrap; font-family: monospace; }
+        .requirements-list ul { padding-left: 20px; }
+        .requirements-list li { margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>COMPUTER PROGRAMMING II – FINAL EXAM (MOCK)</h1>
+        <p><strong>Duration:</strong> 120 minutes | <strong>Total Points:</strong> 100</p>
+        <p style="text-align: left; background: #e0f2fe; padding: 15px; border-radius: 5px; font-size: 14px;">
+            <strong>Instructions:</strong> Write your answers in the provided answer boxes. For multiple choice, select the best answer. For code tracing, write the exact output (including blank lines). For “Spot the Bug” / “Fill in the Blank”, either correct the bug or write the missing code. For coding questions, write complete, runnable Python code. <br><br> Good luck! Remember: no solutions are provided in this document initially. After completing the exam under timed conditions, you may review your answers by clicking "Yakunlash va Tekshirish".
+        </p>
+    </header>
+
+    <form id="examForm">
+        <h2 class="section-title">SECTION 1: MULTIPLE CHOICE (15 questions × 1 point = 15 points)</h2>
+        
+        <div class="question-card" id="qc_q1">
+            <p><strong>1. Which of the following best describes encapsulation in OOP?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q1" value="A"> A. A class can inherit attributes from multiple parent classes.</label></li>
+                <li><label><input type="radio" name="q1" value="B"> B. Data and methods that operate on that data are bundled together, and access to some components is restricted.</label></li>
+                <li><label><input type="radio" name="q1" value="C"> C. Different classes can provide their own implementation of the same method name.</label></li>
+                <li><label><input type="radio" name="q1" value="D"> D. An object can take many forms depending on the context.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> Encapsulation bundles data and methods, restricting access to some components.</div>
+        </div>
+
+        <div class="question-card" id="qc_q2">
+            <p><strong>2. In Python, what is the purpose of the super() function?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q2" value="A"> A. It calls the parent class constructor only.</label></li>
+                <li><label><input type="radio" name="q2" value="B"> B. It returns a temporary object of the superclass, allowing access to its methods.</label></li>
+                <li><label><input type="radio" name="q2" value="C"> C. It creates a new instance of the parent class.</label></li>
+                <li><label><input type="radio" name="q2" value="D"> D. It is used to define a static method.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> super() returns a temporary proxy object of the superclass.</div>
+        </div>
+
+        <div class="question-card" id="qc_q3">
+            <p><strong>3. Which of the following is NOT a magic (dunder) method in Python?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q3" value="A"> A. __len__</label></li>
+                <li><label><input type="radio" name="q3" value="B"> B. __add__</label></li>
+                <li><label><input type="radio" name="q3" value="C"> C. __private__</label></li>
+                <li><label><input type="radio" name="q3" value="D"> D. __repr__</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: C.</strong> __private__ is not a standard dunder method.</div>
+        </div>
+
+        <div class="question-card" id="qc_q4">
+            <p><strong>4. What is the correct way to define a class variable in Python?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q4" value="A"> A. Inside __init__ using self.</label></li>
+                <li><label><input type="radio" name="q4" value="B"> B. Inside a method using cls.</label></li>
+                <li><label><input type="radio" name="q4" value="C"> C. Directly inside the class body, outside any method</label></li>
+                <li><label><input type="radio" name="q4" value="D"> D. Using the @classmethod decorator</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: C.</strong> Class variables are defined directly inside the class body.</div>
+        </div>
+
+        <div class="question-card" id="qc_q5">
+            <p><strong>5. Which of the following statements about abstract base classes (ABCs) is true?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q5" value="A"> A. You can instantiate an ABC directly.</label></li>
+                <li><label><input type="radio" name="q5" value="B"> B. Abstract methods must be implemented in every subclass.</label></li>
+                <li><label><input type="radio" name="q5" value="C"> C. ABCs cannot contain concrete methods.</label></li>
+                <li><label><input type="radio" name="q5" value="D"> D. The @abstractmethod decorator is optional for abstract methods.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> Abstract methods must be implemented in every concrete subclass.</div>
+        </div>
+
+        <div class="question-card" id="qc_q6">
+            <p><strong>6. What does the @staticmethod decorator do?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q6" value="A"> A. It makes a method behave like a regular function but does not receive self or cls.</label></li>
+                <li><label><input type="radio" name="q6" value="B"> B. It allows the method to be called on the class only, not on instances.</label></li>
+                <li><label><input type="radio" name="q6" value="C"> C. It automatically passes the class as the first argument.</label></li>
+                <li><label><input type="radio" name="q6" value="D"> D. It prevents the method from being overridden.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: A.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q7">
+            <p><strong>7. Given the following code snippet, what is the output?</strong></p>
+<pre>class A:
+    def __init__(self): self.x = 10
+class B(A):
+    def __init__(self):
+        super().__init__()
+        self.x = 20
+obj = B()
+print(obj.x)</pre>
+            <ul class="options">
+                <li><label><input type="radio" name="q7" value="A"> A. 10</label></li>
+                <li><label><input type="radio" name="q7" value="B"> B. 20</label></li>
+                <li><label><input type="radio" name="q7" value="C"> C. AttributeError</label></li>
+                <li><label><input type="radio" name="q7" value="D"> D. None</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> self.x avval 10 bo'ladi, keyin 20 bilan qayta yoziladi.</div>
+        </div>
+
+        <div class="question-card" id="qc_q8">
+            <p><strong>8. Which design pattern ensures that a class has only one instance?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q8" value="A"> A. Factory</label></li>
+                <li><label><input type="radio" name="q8" value="B"> B. Observer</label></li>
+                <li><label><input type="radio" name="q8" value="C"> C. Singleton</label></li>
+                <li><label><input type="radio" name="q8" value="D"> D. Strategy</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: C.</strong> Singleton ensures only one instance exists.</div>
+        </div>
+
+        <div class="question-card" id="qc_q9">
+            <p><strong>9. What is the purpose of the __post_init__ method in a dataclass?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q9" value="A"> A. To perform validation or additional initialization after the generated __init__.</label></li>
+                <li><label><input type="radio" name="q9" value="B"> B. To define a custom constructor that replaces the generated one.</label></li>
+                <li><label><input type="radio" name="q9" value="C"> C. To specify default values for fields.</label></li>
+                <li><label><input type="radio" name="q9" value="D"> D. To mark a field as post-initialization only.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: A.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q10">
+            <p><strong>10. In Python, what is the MRO (Method Resolution Order)?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q10" value="A"> A. The order in which methods are called when multiple inheritance is used.</label></li>
+                <li><label><input type="radio" name="q10" value="B"> B. The order in which the __init__ methods of parent classes are called.</label></li>
+                <li><label><input type="radio" name="q10" value="C"> C. The order in which attributes are looked up in a class hierarchy.</label></li>
+                <li><label><input type="radio" name="q10" value="D"> D. Both A and C.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: D.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q11">
+            <p><strong>11. Which of the following correctly raises a custom exception in Python?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q11" value="A"> A. raise MyException("Error")</label></li>
+                <li><label><input type="radio" name="q11" value="B"> B. throw MyException("Error")</label></li>
+                <li><label><input type="radio" name="q11" value="C"> C. raise MyException</label></li>
+                <li><label><input type="radio" name="q11" value="D"> D. except MyException:</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: A.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q12">
+            <p><strong>12. What does the __enter__ method in a context manager return?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q12" value="A"> A. The resource that will be used inside the with block.</label></li>
+                <li><label><input type="radio" name="q12" value="B"> B. True if an exception occurred.</label></li>
+                <li><label><input type="radio" name="q12" value="C"> C. The context manager class itself.</label></li>
+                <li><label><input type="radio" name="q12" value="D"> D. None.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: A.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q13">
+            <p><strong>13. Which of the following is the correct way to define a class method that can be used as an alternative constructor?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q13" value="A"> A. @staticmethod</label></li>
+                <li><label><input type="radio" name="q13" value="B"> B. @classmethod</label></li>
+                <li><label><input type="radio" name="q13" value="C"> C. @property</label></li>
+                <li><label><input type="radio" name="q13" value="D"> D. @abstractmethod</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q14">
+            <p><strong>14. In Python, what happens when you use a mutable default argument (e.g., []) in a method definition?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q14" value="A"> A. A new list is created each time the method is called.</label></li>
+                <li><label><input type="radio" name="q14" value="B"> B. The default value is shared across all calls, potentially causing unexpected behavior.</label></li>
+                <li><label><input type="radio" name="q14" value="C"> C. Python raises a syntax error.</label></li>
+                <li><label><input type="radio" name="q14" value="D"> D. The default value is ignored.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q15">
+            <p><strong>15. What is the primary benefit of using the Observer pattern?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q15" value="A"> A. It ensures a class has only one instance.</label></li>
+                <li><label><input type="radio" name="q15" value="B"> B. It allows one object to notify many dependent objects of state changes without tight coupling.</label></li>
+                <li><label><input type="radio" name="q15" value="C"> C. It provides a way to create objects without specifying the exact class.</label></li>
+                <li><label><input type="radio" name="q15" value="D"> D. It encapsulates a family of algorithms and makes them interchangeable.</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong></div>
+        </div>
+
+        <h2 class="section-title">SECTION 2: CODE TRACING (5 questions × 5 points = 25 points)</h2>
+
+        <div class="question-card" id="qc_t1">
+            <p><strong>Question 1 (5 points)</strong></p>
+<pre>class A:
+    def show(self): return "A"
+class B(A):
+    def show(self): return "B"
+class C(A):
+    def show(self): return "C"
+class D(B, C):
+    pass
+
+obj = D()
+print(obj.show())
+print(D.__mro__)</pre>
+            <textarea name="t1" placeholder="Exact output yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><div class="code-solution">B
+(&lt;class '__main__.D'&gt;, &lt;class '__main__.B'&gt;, &lt;class '__main__.C'&gt;, &lt;class '__main__.A'&gt;, &lt;class 'object'&gt;)</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t2">
+            <p><strong>Question 2 (5 points)</strong></p>
+<pre>class Counter:
+    count = 0
+    def __init__(self):
+        Counter.count += 1
+        self.id = Counter.count
+    def __str__(self): return f"Counter #{self.id}"
+
+a = Counter()
+b = Counter()
+c = Counter()
+print(a, b, c)
+print(Counter.count)</pre>
+            <textarea name="t2" placeholder="Exact output yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><div class="code-solution">Counter #1 Counter #2 Counter #3
+3</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t3">
+            <p><strong>Question 3 (5 points)</strong></p>
+<pre>def make_multiplier(n):
+    def multiplier(x): return x * n
+    return multiplier
+double = make_multiplier(2)
+triple = make_multiplier(3)
+print(double(5))
+print(triple(5))
+print(double(10))</pre>
+            <textarea name="t3" placeholder="Exact output yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><div class="code-solution">10
+15
+20</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t4">
+            <p><strong>Question 4 (5 points)</strong></p>
+<pre>class MyList(list):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self._sum = sum(self) if self else 0
+    def append(self, item):
+        super().append(item)
+        self._sum += item
+lst = MyList([1, 2, 3])
+print(lst._sum)
+lst.append(4)
+print(lst._sum)
+print(lst)</pre>
+            <textarea name="t4" placeholder="Exact output yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><div class="code-solution">6
+10
+[1, 2, 3, 4]</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t5">
+            <p><strong>Question 5 (5 points)</strong></p>
+<pre>class Base:
+    def __init__(self, value): self._value = value
+    @property
+    def value(self): return self._value
+    @value.setter
+    def value(self, new_val):
+        if new_val < 0: raise ValueError("Negative not allowed")
+        self._value = new_val
+
+obj = Base(10)
+print(obj.value)
+obj.value = 5
+print(obj.value)
+obj.value = -1
+print("This line will not be reached")</pre>
+            <textarea name="t5" placeholder="Exact output yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><div class="code-solution">10
+5
+ValueError: Negative not allowed</div></div>
+        </div>
+
+        <h2 class="section-title">SECTION 3: SPOT THE BUG / FILL IN THE BLANK (4 questions × 5 points = 20 points)</h2>
+        <p style="background: #fffbe1; padding: 10px; border-radius: 5px;"><strong>Instructions:</strong> Each question contains a code snippet with either a bug (logical, syntactical, or OOP design error) or a blank (_____).<br>
+        If there is a bug, identify the line(s) with the error and explain why it is wrong. Then write the correct code that makes the program work as intended.<br>
+        If there is a blank (_____), write the missing code that completes the functionality.</p>
+
+        <div class="question-card" id="qc_b1">
+            <p><strong>Question 1 (5 points)</strong></p>
+            <p><strong>Bug:</strong> The following code attempts to use an abstract base class but has a design flaw. Identify and fix it.</p>
+<pre>from abc import ABC, abstractmethod
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+
+class Rectangle(Shape):
+    def __init__(self, w, h):
+        self.w = w
+        self.h = h
+    
+    # Bug: missing area method override</pre>
+            <textarea name="b1" placeholder="Write the explanation and corrected code here..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> Rectangle klassi area() ni implement qilmagan.
+<div class="code-solution">class Rectangle(Shape):
+    def __init__(self, w, h):
+        self.w = w
+        self.h = h
+    
+    def area(self):
+        return self.w * self.h</div></div>
+        </div>
+
+        <div class="question-card" id="qc_b2">
+            <p><strong>Question 2 (5 points)</strong></p>
+            <p><strong>Blank:</strong> Complete the following context manager so that the file is properly closed after the <code>with</code> block.</p>
+<pre>class FileManager:
+    def __init__(self, filename, mode):
+        self.filename = filename
+        self.mode = mode
+        self.file = None
+    
+    def __enter__(self):
+        self.file = open(self.filename, self.mode)
+        return self.file
+    
+    # Missing method: ____</pre>
+            <textarea name="b2" placeholder="Write the missing method here..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> __exit__ metodi yetishmayapti.
+<div class="code-solution">def __exit__(self, exc_type, exc_val, exc_tb):
+    if self.file:
+        self.file.close()</div></div>
+        </div>
+
+        <div class="question-card" id="qc_b3">
+            <p><strong>Question 3 (5 points)</strong></p>
+            <p><strong>Bug:</strong> The following inheritance code raises an error. Identify the line and explain the fix.<br>
+            <em>Hint: The code runs but violates best practices. However, think about MRO and potential bugs if more complex inheritance is added. Fix it using <code>super()</code>.</em></p>
+<pre>class A:
+    def __init__(self, x):
+        self.x = x
+
+class B(A):
+    def __init__(self, x, y):
+        self.y = y
+        A.__init__(self, x)   # Is this correct? What is the issue?
+
+obj = B(10, 20)
+print(obj.x, obj.y)</pre>
+            <textarea name="b3" placeholder="Write the explanation and corrected code using super()..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> To'g'ridan-to'g'ri `A.__init__` chaqirish yomon amaliyot (MRO ni buzadi).
+<div class="code-solution">class B(A):
+    def __init__(self, x, y):
+        super().__init__(x)
+        self.y = y</div></div>
+        </div>
+
+        <div class="question-card" id="qc_b4">
+            <p><strong>Question 4 (5 points)</strong></p>
+            <p><strong>Blank:</strong> Complete the <code>__add__</code> method so that two Vector objects can be added with the <code>+</code> operator. The method should return a new Vector with summed coordinates.</p>
+<pre>class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def _____(self, other):
+        return Vector(self.x + other.x, self.y + other.y)</pre>
+            <textarea name="b4" placeholder="Write the missing dunder method code here..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong>
+<div class="code-solution">def __add__(self, other):
+    return Vector(self.x + other.x, self.y + other.y)</div></div>
+        </div>
+
+        <h2 class="section-title">SECTION 4: HANDWRITTEN CODING (3 questions × 13.33 points ≈ 40 points total)</h2>
+        <p style="background: #fffbe1; padding: 10px; border-radius: 5px;"><strong>Instructions:</strong> Write complete, runnable Python code. Include class definitions, required methods, and a demonstration (if <code>__name__ == "__main__":</code> block) that shows the system working with sample data.</p>
+
+        <div class="question-card" id="qc_c1">
+            <p><strong>Question 1 (13 points) – Observer Pattern: Weather Station</strong></p>
+            <p><strong>Scenario:</strong> A weather station collects temperature data. Multiple display units (Observers) need to be notified whenever the temperature changes.</p>
+            <div class="requirements-list">
+                <p><strong>Requirements:</strong></p>
+                <ul>
+                    <li>1. Create an <code>abstract</code> class <code>Observer</code> using <code>ABC</code> and <code>@abstractmethod</code>.
+                        <ul><li>Define an abstract method <code>update(self, temperature)</code>.</li></ul>
+                    </li>
+                    <li>2. Create a <code>WeatherStation</code> class (the Subject).
+                        <ul>
+                            <li>Maintain a private list of observers (<code>_observers</code>).</li>
+                            <li>Provide these methods:
+                                <ul>
+                                    <li><code>attach(self, observer)</code> – appends an observer to the list.</li>
+                                    <li><code>detach(self, observer)</code> – removes an observer from the list.</li>
+                                    <li><code>notify_observers(self)</code> – iterates through all observers and calls <code>observer.update(self._temperature)</code>.</li>
+                                    <li><code>set_temperature(self, temp)</code> – updates <code>self._temperature</code> and calls <code>notify_observers()</code>.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>3. Create two <strong>concrete observer classes</strong>:
+                        <ul>
+                            <li><code>PhoneDisplay</code> – <code>update(self, temperature)</code> prints: <code>"Phone Display: Temperature is {temperature}°C"</code>.</li>
+                            <li><code>WindowDisplay</code> – <code>update(self, temperature)</code> prints: <code>"Window Display: Temperature is {temperature}°C"</code>.</li>
+                        </ul>
+                    </li>
+                    <li>4. <strong>Demonstration</strong> (inside <code>if __name__ == "__main__":</code>):
+                        <ul>
+                            <li>Create a <code>WeatherStation</code>.</li>
+                            <li>Create one <code>PhoneDisplay</code> and one <code>WindowDisplay</code>.</li>
+                            <li>Attach both observers.</li>
+                            <li>Set temperature to 25 (both displays update).</li>
+                            <li>Set temperature to 30 (both displays update again).</li>
+                            <li>Detach the <code>PhoneDisplay</code>.</li>
+                            <li>Set temperature to 20 (only <code>WindowDisplay</code> updates).</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <textarea name="c1" style="min-height: 350px;" placeholder="Write your full runnable Python code here..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><pre class="code-solution">from abc import ABC, abstractmethod
+
+class Observer(ABC):
+    @abstractmethod
+    def update(self, temperature):
+        pass
+
+class WeatherStation:
+    def __init__(self):
+        self._observers = []
+        self._temperature = 0
+
+    def attach(self, observer):
+        self._observers.append(observer)
+
+    def detach(self, observer):
+        self._observers.remove(observer)
+
+    def notify_observers(self):
+        for observer in self._observers:
+            observer.update(self._temperature)
+
+    def set_temperature(self, temp):
+        self._temperature = temp
+        self.notify_observers()
+
+class PhoneDisplay(Observer):
+    def update(self, temperature):
+        print(f"Phone Display: Temperature is {temperature}°C")
+
+class WindowDisplay(Observer):
+    def update(self, temperature):
+        print(f"Window Display: Temperature is {temperature}°C")
+
+if __name__ == "__main__":
+    station = WeatherStation()
+    phone = PhoneDisplay()
+    window = WindowDisplay()
+    
+    station.attach(phone)
+    station.attach(window)
+    
+    station.set_temperature(25)
+    station.set_temperature(30)
+    
+    station.detach(phone)
+    station.set_temperature(20)</pre></div>
+        </div>
+
+        <div class="question-card" id="qc_c2">
+            <p><strong>Question 2 (13 points) – Strategy Pattern: Payment System</strong></p>
+            <p><strong>Scenario:</strong> An online store offers multiple payment methods. The customer chooses a payment strategy at checkout.</p>
+            <div class="requirements-list">
+                <p><strong>Requirements:</strong></p>
+                <ul>
+                    <li>1. Create an <code>abstract</code> class <code>PaymentStrategy</code> with an abstract method <code>pay(self, amount)</code>.</li>
+                    <li>2. Create three <strong>concrete strategy classes</strong>:
+                        <ul>
+                            <li><code>CreditCardPayment</code> – <code>pay(self, amount)</code> prints: <code>"Paid ${amount} using Credit Card"</code>.</li>
+                            <li><code>PayPalPayment</code> – <code>pay(self, amount)</code> prints: <code>"Paid ${amount} using PayPal"</code>.</li>
+                            <li><code>BitcoinPayment</code> – <code>pay(self, amount)</code> prints: <code>"Paid ${amount} using Bitcoin"</code>.</li>
+                        </ul>
+                    </li>
+                    <li>3. Create a <code>ShoppingCart</code> class:
+                        <ul>
+                            <li>Maintains a list of items. Each item is a tuple: <code>(name, price)</code>.</li>
+                            <li>Methods:
+                                <ul>
+                                    <li><code>add_item(self, name, price)</code> – appends the item.</li>
+                                    <li><code>calculate_total(self)</code> – returns the sum of all item prices.</li>
+                                    <li><code>checkout(self, payment_strategy)</code> – accepts a <code>PaymentStrategy</code> object, calls <code>payment_strategy.pay(total)</code>, then prints <code>"Order completed."</code>.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>4. <strong>Demonstration</strong> (inside <code>if __name__ == "__main__":</code>):
+                        <ul>
+                            <li>Create a <code>ShoppingCart</code>.</li>
+                            <li>Add three items: <code>("Laptop", 1200)</code>, <code>("Mouse", 25)</code>, <code>("Keyboard", 80)</code>.</li>
+                            <li>Calculate and display the total.</li>
+                            <li>Checkout using <code>CreditCardPayment</code>.</li>
+                            <li>Create a new cart or clear it, then checkout again using <code>PayPalPayment</code> (you may reuse the same cart with different items).</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <textarea name="c2" style="min-height: 350px;" placeholder="Write your full runnable Python code here..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><pre class="code-solution">from abc import ABC, abstractmethod
+
+class PaymentStrategy(ABC):
+    @abstractmethod
+    def pay(self, amount):
+        pass
+
+class CreditCardPayment(PaymentStrategy):
+    def pay(self, amount):
+        print(f"Paid ${amount} using Credit Card")
+
+class PayPalPayment(PaymentStrategy):
+    def pay(self, amount):
+        print(f"Paid ${amount} using PayPal")
+
+class BitcoinPayment(PaymentStrategy):
+    def pay(self, amount):
+        print(f"Paid ${amount} using Bitcoin")
+
+class ShoppingCart:
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, name, price):
+        self.items.append((name, price))
+
+    def calculate_total(self):
+        return sum(price for name, price in self.items)
+
+    def checkout(self, payment_strategy):
+        total = self.calculate_total()
+        payment_strategy.pay(total)
+        print("Order completed.")
+
+if __name__ == "__main__":
+    cart = ShoppingCart()
+    cart.add_item("Laptop", 1200)
+    cart.add_item("Mouse", 25)
+    cart.add_item("Keyboard", 80)
+    
+    print(f"Total: {cart.calculate_total()}")
+    cart.checkout(CreditCardPayment())
+    
+    cart2 = ShoppingCart()
+    cart2.add_item("Monitor", 300)
+    cart2.checkout(PayPalPayment())</pre></div>
+        </div>
+
+        <div class="question-card" id="qc_c3">
+            <p><strong>Question 3 (14 points) – Factory Pattern: Document Processor</strong></p>
+            <p><strong>Scenario:</strong> A document processing system needs to create different types of documents (PDF, Word, Text) without exposing the creation logic to the client code.</p>
+            <div class="requirements-list">
+                <p><strong>Requirements:</strong></p>
+                <ul>
+                    <li>1. Create an <code>abstract</code> class <code>Document</code> with an abstract method <code>open(self)</code>. Each subclass overrides <code>open()</code> to print a message specific to its type.</li>
+                    <li>2. Create three <strong>concrete document classes</strong>: <code>PDFDocument</code>, <code>WordDocument</code>, <code>TextDocument</code>, each implementing <code>open()</code> with their own message (e.g., <code>"Opening PDF document..."</code>).</li>
+                    <li>3. Create a <code>DocumentFactory</code> class with a static method <code>create_document(doc_type)</code> that:
+                        <ul>
+                            <li>Takes a string: <code>"pdf"</code>, <code>"word"</code>, or <code>"text"</code>.</li>
+                            <li>Returns an instance of the corresponding concrete class.</li>
+                            <li>Raises a <code>ValueError</code> for unsupported types.</li>
+                        </ul>
+                    </li>
+                    <li>4. <strong>In your demonstration:</strong>
+                        <ul>
+                            <li>Use the factory to create one document of each type.</li>
+                            <li>Call <code>open()</code> on each.</li>
+                            <li>Attempt to create an unsupported type (e.g., <code>"excel"</code>) and handle the exception properly, printing <code>"Error: Unsupported document type"</code>.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <textarea name="c3" style="min-height: 350px;" placeholder="Write your full runnable Python code here..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><pre class="code-solution">from abc import ABC, abstractmethod
+
+class Document(ABC):
+    @abstractmethod
+    def open(self):
+        pass
+
+class PDFDocument(Document):
+    def open(self):
+        print("Opening PDF document...")
+
+class WordDocument(Document):
+    def open(self):
+        print("Opening Word document...")
+
+class TextDocument(Document):
+    def open(self):
+        print("Opening Text document...")
+
+class DocumentFactory:
+    @staticmethod
+    def create_document(doc_type):
+        dt = doc_type.lower()
+        if dt == "pdf":
+            return PDFDocument()
+        elif dt == "word":
+            return WordDocument()
+        elif dt == "text":
+            return TextDocument()
+        else:
+            raise ValueError("Unsupported document type")
+
+if __name__ == "__main__":
+    for dt in ["pdf", "word", "text"]:
+        doc = DocumentFactory.create_document(dt)
+        doc.open()
+        
+    try:
+        err_doc = DocumentFactory.create_document("excel")
+    except ValueError:
+        print("Error: Unsupported document type")</pre></div>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn-save" onclick="saveAnswers()">Javoblarni Saqlash</button>
+            <button type="button" class="btn-history" onclick="showHistory()">Tarixni Ko'rish</button>
+            <button type="button" class="btn-check" onclick="checkAnswers()">Yakunlash va Tekshirish</button>
+        </div>
+    </form>
+</div>
+
+<div id="toast" class="toast">Saqlandi!</div>
+<div id="historyModal">
+    <div class="modal-content">
+        <h2>Saqlangan Javoblar Tarixi</h2>
+        <div id="historyList"></div>
+        <button onclick="closeHistory()" style="margin-top: 15px; width: 100%; background: #ef4444; border: none; color: white; padding: 10px; border-radius: 5px; cursor: pointer;">Yopish</button>
+    </div>
+</div>
+
+<script>
+    const mcqAnswers = { q1:'B', q2:'B', q3:'C', q4:'C', q5:'B', q6:'A', q7:'B', q8:'C', q9:'A', q10:'D', q11:'A', q12:'A', q13:'B', q14:'B', q15:'B' };
+    const traceKeys = { t1:['B','D','B','C','A','object'], t2:['Counter','1','2','3'], t3:['10','15','20'], t4:['6','10','[1, 2, 3, 4]'], t5:['10','5','ValueError'] };
+    const bugKeys = { b1:['area','self.w','self.h'], b2:['__exit__','close'], b3:['super().__init__'], b4:['__add__'] };
+    const codeKeys = { c1:['Observer','WeatherStation','attach','notify_observers'], c2:['PaymentStrategy','ShoppingCart','pay'], c3:['DocumentFactory','create_document','ValueError'] };
+
+    function checkAnswers() {
+        const formData = new FormData(document.getElementById('examForm'));
+        let score = 0;
+
+        for(let i=1; i<=15; i++) {
+            const key = 'q'+i;
+            const val = formData.get(key);
+            const card = document.getElementById('qc_'+key);
+            if(val === mcqAnswers[key]) { card.className = 'question-card correct'; score++; } 
+            else { card.className = 'question-card wrong'; }
+        }
+        
+        const checkText = (key, keyArr) => {
+            const val = formData.get(key) || '';
+            const card = document.getElementById('qc_'+key);
+            let matchCount = keyArr.filter(k => val.includes(k)).length;
+            if(matchCount >= keyArr.length - 1 && val.length > 5) { card.className = 'question-card correct'; } 
+            else { card.className = 'question-card wrong'; }
+        }
+
+        Object.keys(traceKeys).forEach(k => checkText(k, traceKeys[k]));
+        Object.keys(bugKeys).forEach(k => checkText(k, bugKeys[k]));
+        Object.keys(codeKeys).forEach(k => checkText(k, codeKeys[k]));
+
+        document.querySelectorAll('.solution-box').forEach(el => el.style.display = 'block');
+        showToast("Tekshirildi! Yechimlarni ko'rib chiqing.");
+        window.scrollTo(0, 0);
+    }
+
+    function getHistory() { return JSON.parse(localStorage.getItem('finalExamMockFull')) || []; }
+    
+    function loadLatestAnswers() {
+        const history = getHistory();
+        if (history.length > 0) applyDataToForm(history[0].data);
+    }
+
+    function applyDataToForm(data) {
+        document.getElementById('examForm').reset();
+        for (const [name, value] of Object.entries(data)) {
+            const el = document.querySelector(`[name="${name}"]`);
+            if (el) {
+                if (el.type === 'radio') {
+                    const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                    if (radio) radio.checked = true;
+                } else if (el.tagName === 'TEXTAREA') { el.value = value; }
+            }
+        }
+        document.querySelectorAll('.question-card').forEach(c => c.className = 'question-card');
+        document.querySelectorAll('.solution-box').forEach(el => el.style.display = 'none');
+    }
+
+    function saveAnswers() {
+        const formData = new FormData(document.getElementById('examForm'));
+        const data = {};
+        for (let [key, value] of formData.entries()) data[key] = value;
+        const history = getHistory();
+        history.unshift({ time: new Date().toLocaleString('uz-UZ'), data: data });
+        if(history.length > 10) history.pop();
+        localStorage.setItem('finalExamMockFull', JSON.stringify(history));
+        showToast("Javoblar saqlandi!");
+    }
+
+    function showHistory() {
+        const history = getHistory();
+        const listEl = document.getElementById('historyList');
+        listEl.innerHTML = history.length ? '' : '<p>Hali hech narsa saqlanmagan.</p>';
+        history.forEach((item, idx) => {
+            listEl.innerHTML += `<div class="history-item"><span>${item.time} da saqlangan</span>
+                <button class="btn-save" onclick="loadHistoryItem(${idx})">Yuklash</button></div>`;
+        });
+        document.getElementById('historyModal').style.display = 'flex';
+    }
+
+    function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
+    function loadHistoryItem(index) {
+        applyDataToForm(getHistory()[index].data);
+        closeHistory();
+        showToast("Holat yuklandi!");
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.textContent = msg; toast.className = "toast show";
+        setTimeout(() => toast.className = "toast", 3000);
+    }
+
+    window.onload = loadLatestAnswers;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMPUTER PROGRAMMING II - OOP Mock Exam</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        header {
+            text-align: center; margin-bottom: 30px; background: var(--card-bg);
+            padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 { color: var(--primary); }
+        .section-title { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-top: 40px; }
+        .question-card {
+            background: var(--card-bg); padding: 20px; border-radius: 8px;
+            margin-bottom: 20px; border: 2px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .question-card.correct { border-color: var(--success); background-color: #ecfdf5; }
+        .question-card.wrong { border-color: var(--danger); background-color: #fef2f2; }
+        .options { list-style-type: none; padding-left: 0; }
+        .options li { margin-bottom: 10px; }
+        .options label { cursor: pointer; display: flex; align-items: flex-start; gap: 10px; }
+        pre, code {
+            background: var(--code-bg); color: var(--code-text);
+            padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 14px;
+        }
+        pre { padding: 15px; overflow-x: auto; margin-top: 10px; }
+        textarea {
+            width: 100%; min-height: 100px; padding: 12px;
+            border: 1px solid var(--border); border-radius: 5px;
+            font-family: 'Consolas', monospace; resize: vertical; margin-top: 15px; box-sizing: border-box;
+        }
+        textarea:focus { outline: none; border-color: var(--primary); }
+        .solution-box {
+            display: none; margin-top: 15px; padding: 15px;
+            background: #e0e7ff; border-left: 4px solid var(--primary);
+            border-radius: 4px; font-size: 14px;
+        }
+        .actions {
+            position: sticky; bottom: 0; text-align: center; margin-top: 40px;
+            background: var(--card-bg); padding: 15px; border-radius: 8px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; z-index: 10;
+        }
+        button {
+            color: white; border: none; padding: 12px 25px; font-size: 16px;
+            border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s;
+        }
+        .btn-save { background-color: var(--primary); }
+        .btn-save:hover { background-color: #4338ca; }
+        .btn-check { background-color: var(--success); }
+        .btn-check:hover { background-color: #059669; }
+        .btn-history { background-color: #4b5563; }
+        .btn-history:hover { background-color: #374151; }
+        
+        .toast {
+            visibility: hidden; min-width: 250px; background-color: var(--primary); color: #fff;
+            text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 100;
+            left: 50%; bottom: 80px; transform: translateX(-50%); font-size: 17px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 80px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 80px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        
+        #historyModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--card-bg); padding: 25px; border-radius: 8px;
+            width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto;
+        }
+        .history-item {
+            padding: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
+        }
+        .code-solution { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 5px; color: #0f172a; white-space: pre-wrap; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>COMPUTER PROGRAMMING II (OOP in Python) — Mock Final Exam</h1>
+        <p><strong>Duration:</strong> 120 minutes | <strong>Total Points:</strong> 100</p>
+        <p style="text-align: left; background: #e0e7ff; padding: 15px; border-radius: 5px; font-size: 14px;">
+            <strong>Yo'riqnoma:</strong> Barcha savollarga javob bering. Kodlash qismida Python 3 sintaksisidan foydalaning. Testni yakunlaganingizdan so'ng <strong>"Yakunlash va Tekshirish"</strong> tugmasini bosib, to'g'ri javoblarni ko'rishingiz mumkin. Saqlash tugmasi orqali ishingizni xotirada olib qoling.
+        </p>
+    </header>
+
+    <form id="examForm">
+        <h2 class="section-title">SECTION 1: Multiple Choice Questions (15 × 1 point = 15 points)</h2>
+        
+        <div class="question-card" id="qc_q1">
+            <p><strong>1. Which of the following correctly defines a class in Python?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q1" value="A"> A. class MyClass:</label></li>
+                <li><label><input type="radio" name="q1" value="B"> B. def MyClass():</label></li>
+                <li><label><input type="radio" name="q1" value="C"> C. new MyClass:</label></li>
+                <li><label><input type="radio" name="q1" value="D"> D. class MyClass():</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: A.</strong> (D ham ishlashiga qaramay, A rasmiy va eng to'g'ri sintaksis hisoblanadi).</div>
+        </div>
+
+        <div class="question-card" id="qc_q2">
+            <p><strong>2. What does the self parameter represent in an instance method?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q2" value="A"> A. The class itself</label></li>
+                <li><label><input type="radio" name="q2" value="B"> B. The current instance of the class</label></li>
+                <li><label><input type="radio" name="q2" value="C"> C. A reference to the parent class</label></li>
+                <li><label><input type="radio" name="q2" value="D"> D. The module containing the class</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q3">
+            <p><strong>3. In Python, how do you make an instance variable “private” by convention?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q3" value="A"> A. Precede the name with __ (double underscore)</label></li>
+                <li><label><input type="radio" name="q3" value="B"> B. Use the private keyword</label></li>
+                <li><label><input type="radio" name="q3" value="C"> C. Precede the name with _ (single underscore)</label></li>
+                <li><label><input type="radio" name="q3" value="D"> D. Both A and C are acceptable conventions</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: D.</strong> _ convention bo'yicha internal use ni bildiradi, __ name mangling orqali qattiqroq himoyani ta'minlaydi.</div>
+        </div>
+
+        <div class="question-card" id="qc_q4">
+            <p><strong>4. Which of the following is not a magic (dunder) method?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q4" value="A"> A. __init__</label></li>
+                <li><label><input type="radio" name="q4" value="B"> B. __str__</label></li>
+                <li><label><input type="radio" name="q4" value="C"> C. __private</label></li>
+                <li><label><input type="radio" name="q4" value="D"> D. __eq__</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: C.</strong> Dunder metodlar oldida va orqasida ikkita underscore bo'lishi kerak.</div>
+        </div>
+
+        <div class="question-card" id="qc_q5">
+            <p><strong>5. What does super() allow you to do?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q5" value="A"> A. Call a method from the parent class</label></li>
+                <li><label><input type="radio" name="q5" value="B"> B. Create a new instance of the parent class</label></li>
+                <li><label><input type="radio" name="q5" value="C"> C. Access private attributes of the parent</label></li>
+                <li><label><input type="radio" name="q5" value="D"> D. Override the parent class entirely</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: A.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q6">
+            <p><strong>6. If class B inherits from class A, and both define __init__, which __init__ is called when creating an instance of B?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q6" value="A"> A. Only A.__init__</label></li>
+                <li><label><input type="radio" name="q6" value="B"> B. Only B.__init__</label></li>
+                <li><label><input type="radio" name="q6" value="C"> C. Both, with A.__init__ called first automatically</label></li>
+                <li><label><input type="radio" name="q6" value="D"> D. Both, but only if B.__init__ explicitly calls super().__init__()</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> Python avtomatik A.__init__ ni chaqirmaydi. Overwrite bo'ladi, agar super() chaqirilmasa faqat B niki ishlaydi.</div>
+        </div>
+
+        <div class="question-card" id="qc_q7">
+            <p><strong>7. Which of the following statements about abstract base classes (ABCs) is true?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q7" value="A"> A. ABCs can be instantiated directly if they have at least one concrete method</label></li>
+                <li><label><input type="radio" name="q7" value="B"> B. ABCs require the @abstractmethod decorator on all methods</label></li>
+                <li><label><input type="radio" name="q7" value="C"> C. ABCs cannot be instantiated and are used as templates for subclasses</label></li>
+                <li><label><input type="radio" name="q7" value="D"> D. ABCs must inherit from object only</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: C.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q8">
+            <p><strong>8. What is the output of this code?</strong></p>
+<pre>@dataclass
+class Point:
+    x: int
+    y: int
+
+p = Point(3, 4)
+print(p)</pre>
+            <ul class="options">
+                <li><label><input type="radio" name="q8" value="A"> A. &lt;__main__.Point object at 0x...&gt;</label></li>
+                <li><label><input type="radio" name="q8" value="B"> B. Point(x=3, y=4)</label></li>
+                <li><label><input type="radio" name="q8" value="C"> C. (3, 4)</label></li>
+                <li><label><input type="radio" name="q8" value="D"> D. Error</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> Dataclass avtomatik `__repr__` generatsiya qiladi.</div>
+        </div>
+
+        <div class="question-card" id="qc_q9">
+            <p><strong>9. Which design pattern ensures a class has only one instance?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q9" value="A"> A. Factory</label></li>
+                <li><label><input type="radio" name="q9" value="B"> B. Observer</label></li>
+                <li><label><input type="radio" name="q9" value="C"> C. Singleton</label></li>
+                <li><label><input type="radio" name="q9" value="D"> D. Strategy</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: C.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q10">
+            <p><strong>10. What does the @staticmethod decorator do?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q10" value="A"> A. Creates a method that cannot be overridden</label></li>
+                <li><label><input type="radio" name="q10" value="B"> B. Creates a method that belongs to the class, not instances</label></li>
+                <li><label><input type="radio" name="q10" value="C"> C. Creates a method that must be called with the class name</label></li>
+                <li><label><input type="radio" name="q10" value="D"> D. Makes a method private</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> Obyektning yoki sinfning ma'lumotlariga bog'lanmagan yordamchi funksiyalar.</div>
+        </div>
+
+        <div class="question-card" id="qc_q11">
+            <p><strong>11. In the Observer pattern, the object that gets notified of changes is called:</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q11" value="A"> A. Subject</label></li>
+                <li><label><input type="radio" name="q11" value="B"> B. Observer</label></li>
+                <li><label><input type="radio" name="q11" value="C"> C. Context</label></li>
+                <li><label><input type="radio" name="q11" value="D"> D. Factory</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> Xabarni oladigan qism Observer, holati o'zgaradigan qism Subject.</div>
+        </div>
+
+        <div class="question-card" id="qc_q12">
+            <p><strong>12. Which of the following is NOT a valid way to create a custom exception?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q12" value="A"> A. class MyError(Exception): pass</label></li>
+                <li><label><input type="radio" name="q12" value="B"> B. class MyError: pass</label></li>
+                <li><label><input type="radio" name="q12" value="C"> C. class MyError(ValueError): pass</label></li>
+                <li><label><input type="radio" name="q12" value="D"> D. class MyError(Exception): def __init__(self, msg): super().__init__(msg)</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> Xatoliklar BaseException yoki Exception dan meros olishi shart.</div>
+        </div>
+
+        <div class="question-card" id="qc_q13">
+            <p><strong>13. What is the purpose of __post_init__ in a dataclass?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q13" value="A"> A. To validate data after __init__ runs automatically</label></li>
+                <li><label><input type="radio" name="q13" value="B"> B. To replace the __init__ method</label></li>
+                <li><label><input type="radio" name="q13" value="C"> C. To define post-initialization processing</label></li>
+                <li><label><input type="radio" name="q13" value="D"> D. Both A and C</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: D.</strong></div>
+        </div>
+
+        <div class="question-card" id="qc_q14">
+            <p><strong>14. Which Python feature allows a function to be passed as an argument to another function?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q14" value="A"> A. Decorators</label></li>
+                <li><label><input type="radio" name="q14" value="B"> B. First-class functions</label></li>
+                <li><label><input type="radio" name="q14" value="C"> C. Lambda expressions</label></li>
+                <li><label><input type="radio" name="q14" value="D"> D. Higher-order functions</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: B.</strong> D ham to'g'ri hisoblanadi (bunday funksiyalar higher-order deyiladi), ammo bazaviy xususiyat bu First-class function. Ikkalasi ham qabul qilinadi. Dastur B ni to'g'ri deb baholaydi.</div>
+        </div>
+
+        <div class="question-card" id="qc_q15">
+            <p><strong>15. What does the Liskov Substitution Principle state?</strong></p>
+            <ul class="options">
+                <li><label><input type="radio" name="q15" value="A"> A. Subtypes should be replaceable by their base types</label></li>
+                <li><label><input type="radio" name="q15" value="B"> B. A class should have only one reason to change</label></li>
+                <li><label><input type="radio" name="q15" value="C"> C. Classes should be open for extension but closed for modification</label></li>
+                <li><label><input type="radio" name="q15" value="D"> D. Depend on abstractions, not concrete classes</label></li>
+            </ul>
+            <div class="solution-box"><strong>To'g'ri javob: A.</strong></div>
+        </div>
+
+        <h2 class="section-title">SECTION 2: Code Tracing (5 × 5 points = 25 points)</h2>
+        <p>Write the exact output of each code snippet.</p>
+
+        <div class="question-card" id="qc_t16">
+            <p><strong>16. Exact output:</strong></p>
+<pre>class A:
+    def show(self): return "A"
+class B(A):
+    def show(self): return "B"
+class C(A):
+    def show(self): return "C"
+class D(B, C):
+    pass
+obj = D()
+print(obj.show())
+print(D.__mro__)</pre>
+            <textarea name="t16" placeholder="Output..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><div class="code-solution">B
+(&lt;class '__main__.D'&gt;, &lt;class '__main__.B'&gt;, &lt;class '__main__.C'&gt;, &lt;class '__main__.A'&gt;, &lt;class 'object'&gt;)</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t17">
+            <p><strong>17. Exact output:</strong></p>
+<pre>class Counter:
+    _count = 0
+    def __init__(self):
+        Counter._count += 1
+        self.id = Counter._count
+    @classmethod
+    def total(cls): return cls._count
+
+a = Counter()
+b = Counter()
+c = Counter()
+print(Counter.total())
+print(a.id, b.id, c.id)</pre>
+            <textarea name="t17" placeholder="Output..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><div class="code-solution">3
+1 2 3</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t18">
+            <p><strong>18. Exact output:</strong></p>
+<pre>def append_to(element, target=[]):
+    target.append(element)
+    return target
+
+print(append_to(1))
+print(append_to(2))
+print(append_to(3, []))
+print(append_to(4))</pre>
+            <textarea name="t18" placeholder="Output..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> Mutable default argument o'zgartirilishi.<br><div class="code-solution">[1]
+[1, 2]
+[3]
+[1, 2, 4]</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t19">
+            <p><strong>19. Exact output:</strong></p>
+<pre>class MyList(list):
+    def __add__(self, other):
+        return MyList(super().__add__(other * 2))
+
+a = MyList([1, 2, 3])
+b = [4, 5]
+c = a + b
+print(c)
+print(type(c))</pre>
+            <textarea name="t19" placeholder="Output..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> other * 2 => [4, 5, 4, 5].<br><div class="code-solution">[1, 2, 3, 4, 5, 4, 5]
+&lt;class '__main__.MyList'&gt;</div></div>
+        </div>
+
+        <div class="question-card" id="qc_t20">
+            <p><strong>20. Exact output:</strong></p>
+<pre>class Config:
+    _instance = None
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.settings = {"theme": "dark"}
+        return cls._instance
+
+c1 = Config()
+c2 = Config()
+c1.settings["theme"] = "light"
+print(c2.settings["theme"])
+print(c1 is c2)</pre>
+            <textarea name="t20" placeholder="Output..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> Singleton obyekti ustida ishlash.<br><div class="code-solution">light
+True</div></div>
+        </div>
+
+        <h2 class="section-title">SECTION 3: Spot the Bug / Fill in the Blank (4 × 5 points = 20 points)</h2>
+
+        <div class="question-card" id="qc_b21">
+            <p><strong>21. Spot the bug:</strong></p>
+<pre>class Rectangle:
+    def __init__(self, width, height):
+        self.width, self.height = width, height
+    def area(self): return self.width * self.height
+
+class Square(Rectangle):
+    def __init__(self, side):
+        super().__init__(side, side)
+    def set_width(self, value):
+        self.width = value
+        # Bug: forgets to update self.height to keep it square
+
+sq = Square(5)
+sq.set_width(10)
+print(sq.area())  # prints 50, should be 100</pre>
+            <textarea name="b21" placeholder="Qanday to'g'irlash kerakligini yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> Kvadrat o'zining mutanosibligini saqlashi uchun bo'yi va eni bir xil o'zgarishi kerak.
+<div class="code-solution">def set_width(self, value):
+    self.width = value
+    self.height = value</div></div>
+        </div>
+
+        <div class="question-card" id="qc_b22">
+            <p><strong>22. Fill in the blank:</strong></p>
+<pre>class Vehicle(ABC):
+    @abstractmethod
+    def start(self): pass
+
+class Motorcycle(Vehicle):
+    ____  # Fill in the blank so it can be instantiated
+
+m = Motorcycle()</pre>
+            <textarea name="b22" placeholder="Blankga nima yozilishi kerak?"></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> Abstract class metodini override qilish kerak.
+<div class="code-solution">def start(self):
+    print("Motorcycle started.")</div></div>
+        </div>
+
+        <div class="question-card" id="qc_b23">
+            <p><strong>23. Spot the bug:</strong></p>
+<pre>class Temperature:
+    def __init__(self, celsius): self._celsius = celsius
+    
+    @property
+    def fahrenheit(self):
+        return self._celsius * 9/5 + 32
+
+t = Temperature(25)
+t.fahrenheit = 100   # AttributeError: can't set attribute
+print(t.celsius)</pre>
+            <textarea name="b23" placeholder="Qanday setter qo'shish kerak?"></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> Fahrenheit uchun setter qo'shilishi kerak.
+<div class="code-solution">@fahrenheit.setter
+def fahrenheit(self, value):
+    self._celsius = (value - 32) * 5 / 9</div></div>
+        </div>
+
+        <div class="question-card" id="qc_b24">
+            <p><strong>24. Fill in the blanks:</strong></p>
+<pre>class Observable:
+    def __init__(self): self._obs = []
+    def attach(self, o): self._obs.append(o)
+    def notify(self, msg):
+        for o in self._obs:
+            o.____(msg)   # Blank 1
+
+class ConcreteObserver:
+    def ____(self, msg):  # Blank 2
+        print(msg)</pre>
+            <textarea name="b24" placeholder="Blank 1 va Blank 2: ..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong> Metod nomi bir xil bo'lishi kerak. Standard nom `update`.
+<div class="code-solution">Blank 1: update
+Blank 2: update</div></div>
+        </div>
+
+        <h2 class="section-title">SECTION 4: Handwritten Coding (3 × 40 total = 40 points)</h2>
+
+        <div class="question-card" id="qc_c25">
+            <p><strong>25. Strategy Pattern: Payment Processor (15 points)</strong></p>
+            <p>Implement `PaymentStrategy` (abstract), `CreditCardPayment`, `PayPalPayment`, `CryptoPayment`. Implement `ShoppingCart` with `add_item(price)`, `calculate_total()`, and `checkout(strategy)`.</p>
+            <textarea name="c25" style="min-height: 250px;" placeholder="Python kodini yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><pre class="code-solution">from abc import ABC, abstractmethod
+
+class PaymentStrategy(ABC):
+    @abstractmethod
+    def pay(self, amount: float) -> str:
+        pass
+
+class CreditCardPayment(PaymentStrategy):
+    def __init__(self, card_number, name):
+        self.card_number = card_number
+        self.name = name
+    def pay(self, amount):
+        return f"Paid ${amount} via Credit Card ending in {self.card_number[-4:]}"
+
+class PayPalPayment(PaymentStrategy):
+    def __init__(self, email):
+        self.email = email
+    def pay(self, amount):
+        return f"Paid ${amount} via PayPal ({self.email})"
+
+class CryptoPayment(PaymentStrategy):
+    def __init__(self, wallet):
+        self.wallet = wallet
+    def pay(self, amount):
+        return f"Paid ${amount} via Crypto wallet {self.wallet}"
+
+class ShoppingCart:
+    def __init__(self):
+        self.items = []
+        self.strategy = None
+    def add_item(self, price: float):
+        self.items.append(price)
+    def total(self):
+        return sum(self.items)
+    def set_strategy(self, strategy: PaymentStrategy):
+        self.strategy = strategy
+    def checkout(self):
+        print(self.strategy.pay(self.total()))</pre></div>
+        </div>
+
+        <div class="question-card" id="qc_c26">
+            <p><strong>26. Custom Context Manager: Timer (12 points)</strong></p>
+            <p>Implement a timer using a Class (`__enter__`, `__exit__`) and a Generator (`@contextmanager`). Both must measure elapsed time and print it cleanly even if an exception occurs.</p>
+            <textarea name="c26" style="min-height: 250px;" placeholder="Python kodini yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><pre class="code-solution">import time
+from contextlib import contextmanager
+
+class ClassTimer:
+    def __enter__(self):
+        self.start = time.time()
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print(f"Elapsed: {time.time() - self.start:.2f} seconds")
+
+@contextmanager
+def func_timer():
+    start = time.time()
+    try:
+        yield
+    finally:
+        print(f"Elapsed: {time.time() - start:.2f} seconds")
+
+# Usage:
+# with ClassTimer(): time.sleep(0.5)
+# with func_timer(): time.sleep(0.5)</pre></div>
+        </div>
+
+        <div class="question-card" id="qc_c27">
+            <p><strong>27. Observer Pattern: Weather Station (13 points)</strong></p>
+            <p>Implement `Subject` (WeatherStation tracking temperature and humidity) and `Observer` (e.g., PhoneDisplay). WeatherStation must have `attach`, `detach`, and `notify` methods.</p>
+            <textarea name="c27" style="min-height: 250px;" placeholder="Python kodini yozing..."></textarea>
+            <div class="solution-box"><strong>Yechim:</strong><br><pre class="code-solution">class Subject:
+    def __init__(self):
+        self._observers = []
+    def attach(self, observer):
+        self._observers.append(observer)
+    def detach(self, observer):
+        self._observers.remove(observer)
+    def notify(self):
+        for obs in self._observers:
+            obs.update(self)
+
+class WeatherStation(Subject):
+    def __init__(self):
+        super().__init__()
+        self.temp = 0
+        self.humidity = 0
+    def set_measurements(self, temp, humidity):
+        self.temp = temp
+        self.humidity = humidity
+        self.notify()
+
+class PhoneDisplay:
+    def update(self, subject):
+        print(f"Phone Display: Temp {subject.temp}°C, Humidity {subject.humidity}%")
+
+# ws = WeatherStation()
+# ws.attach(PhoneDisplay())
+# ws.set_measurements(25, 60)</pre></div>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn-save" onclick="saveAnswers()">Javoblarni Saqlash</button>
+            <button type="button" class="btn-history" onclick="showHistory()">Tarixni Ko'rish</button>
+            <button type="button" class="btn-check" onclick="checkAnswers()">Yakunlash va Tekshirish</button>
+        </div>
+    </form>
+</div>
+
+<div id="toast" class="toast">Saqlandi!</div>
+
+<div id="historyModal">
+    <div class="modal-content">
+        <h2 style="margin-top:0;">Saqlangan Javoblar Tarixi</h2>
+        <div id="historyList"></div>
+        <button onclick="closeHistory()" style="margin-top: 20px; width: 100%; background: #ef4444; border: none; color: white; padding: 12px; border-radius: 5px; cursor: pointer;">Yopish</button>
+    </div>
+</div>
+
+<script>
+    // 1-bo'lim To'g'ri javoblari
+    const mcqAnswers = { 
+        q1:'A', q2:'B', q3:'D', q4:'C', q5:'A', q6:'B', q7:'C', q8:'B', 
+        q9:'C', q10:'B', q11:'B', q12:'B', q13:'D', q14:'B', q15:'A' 
+    };
+    
+    // Qolgan bo'limlar tekshiruvi uchun trigger-so'zlar
+    const fuzzyKeys = { 
+        t16:['B', '__main__.D'], t17:['3', '1 2 3'], t18:['[1]', '[1, 2, 4]'], 
+        t19:['[1, 2, 3, 4, 5, 4, 5]'], t20:['light', 'True'],
+        b21:['self.height'], b22:['def start'], b23:['@fahrenheit.setter'], b24:['update'],
+        c25:['PaymentStrategy', 'CreditCardPayment', 'ShoppingCart'],
+        c26:['__enter__', '__exit__', '@contextmanager', 'yield'],
+        c27:['attach', 'notify', 'update']
+    };
+
+    function checkAnswers() {
+        const formData = new FormData(document.getElementById('examForm'));
+
+        // MCQ ni tekshirish
+        for(let i=1; i<=15; i++) {
+            const val = formData.get('q'+i);
+            const card = document.getElementById('qc_q'+i);
+            if(val === mcqAnswers['q'+i]) card.className = 'question-card correct'; 
+            else card.className = 'question-card wrong';
+        }
+        
+        // Yozma kodlarni tekshirish (fuzzy logic)
+        Object.keys(fuzzyKeys).forEach(key => {
+            const val = formData.get(key) || '';
+            const card = document.getElementById('qc_'+key);
+            let matchCount = fuzzyKeys[key].filter(k => val.includes(k)).length;
+            
+            if(matchCount >= fuzzyKeys[key].length && val.length > 3) {
+                card.className = 'question-card correct';
+            } else {
+                card.className = 'question-card wrong';
+            }
+        });
+
+        // Yechimlarni ochish
+        document.querySelectorAll('.solution-box').forEach(el => el.style.display = 'block');
+        showToast("Tekshirildi! Yechimlarni tahlil qiling.");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Saqlash Funksiyalari
+    function getHistory() { return JSON.parse(localStorage.getItem('oopExamMock')) || []; }
+    
+    function applyDataToForm(data) {
+        document.getElementById('examForm').reset();
+        for (const [name, value] of Object.entries(data)) {
+            const el = document.querySelector(`[name="${name}"]`);
+            if (el) {
+                if (el.type === 'radio') {
+                    const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                    if (radio) radio.checked = true;
+                } else if (el.tagName === 'TEXTAREA') { el.value = value; }
+            }
+        }
+        // Formatlarni tozalash
+        document.querySelectorAll('.question-card').forEach(c => c.className = 'question-card');
+        document.querySelectorAll('.solution-box').forEach(el => el.style.display = 'none');
+    }
+
+    function saveAnswers() {
+        const formData = new FormData(document.getElementById('examForm'));
+        const data = {};
+        for (let [key, value] of formData.entries()) data[key] = value;
+        const history = getHistory();
+        history.unshift({ time: new Date().toLocaleString('uz-UZ'), data: data });
+        if(history.length > 10) history.pop();
+        localStorage.setItem('oopExamMock', JSON.stringify(history));
+        showToast("Javoblar saqlandi!");
+    }
+
+    function showHistory() {
+        const history = getHistory();
+        const listEl = document.getElementById('historyList');
+        listEl.innerHTML = history.length ? '' : '<p>Hali hech narsa saqlanmagan.</p>';
+        history.forEach((item, idx) => {
+            listEl.innerHTML += `<div class="history-item"><span>${item.time} da saqlangan</span>
+                <button class="btn-save" onclick="loadHistoryItem(${idx})">Yuklash</button></div>`;
+        });
+        document.getElementById('historyModal').style.display = 'flex';
+    }
+
+    function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
+    
+    function loadHistoryItem(index) {
+        applyDataToForm(getHistory()[index].data);
+        closeHistory();
+        showToast("Tanlangan holat yuklandi!");
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.textContent = msg; toast.className = "toast show";
+        setTimeout(() => toast.className = "toast", 3000);
+    }
+
+    window.onload = () => {
+        const history = getHistory();
+        if (history.length > 0) applyDataToForm(history[0].data);
+    };
+</script>
+
+</body>
+</html>
